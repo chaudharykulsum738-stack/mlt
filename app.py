@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 import random
 
+
 BASE_DIR = Path(__file__).resolve().parent
 DESKTOP = Path(os.path.expanduser("~/Desktop"))
 
