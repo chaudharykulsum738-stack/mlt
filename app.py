@@ -295,11 +295,13 @@ def daily_stats_df(entries):
 
     df = pd.DataFrame(entries)
 
-    # Date handling
+    # Convert to datetime
     df["date"] = pd.to_datetime(df.get("date"), errors="coerce")
     df = df.dropna(subset=["date"])
 
-    # Numeric columns safety
+    # Force DAY ONLY (remove hours)
+    df["day"] = df["date"].dt.normalize()   # <-- IMPORTANT
+
     for col in [
         "sleepHours",
         "waterLiters",
@@ -311,12 +313,8 @@ def daily_stats_df(entries):
     ]:
         df[col] = pd.to_numeric(df.get(col), errors="coerce")
 
-    # Daily label
-    df["day"] = df["date"].dt.date
-    df["day_label"] = df["date"].dt.strftime("%Y-%m-%d")
-
-    # Group by day
-    g = df.groupby(["day", "day_label"], dropna=False)
+    # Group by DAY (not datetime)
+    g = df.groupby("day")
 
     agg = g.agg(
         avg_sleep=("sleepHours", "mean"),
@@ -327,12 +325,10 @@ def daily_stats_df(entries):
         total_screen=("screenTimeMinutes", "sum"),
         avg_screen=("screenTimeMinutes", "mean"),
         total_steps=("steps", "sum"),
-        start=("date", "min"),
-        end=("date", "max"),
-    )
+    ).reset_index()
 
-    agg = agg.sort_values("day").reset_index(drop=True)
     return agg
+
 
 
 st.markdown('<div class="banner">🧠 Mental Health Tracker</div>', unsafe_allow_html=True)
