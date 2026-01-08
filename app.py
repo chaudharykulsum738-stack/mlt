@@ -510,8 +510,6 @@ with tab2:
                 st.rerun()
     else:
         st.info("No entries yet")
-
-
 with tab3:
     st.subheader("📊 Daily Dashboard")
 
@@ -520,6 +518,8 @@ with tab3:
     if ds.empty:
         st.info("No entries yet")
     else:
+        ds = ds.sort_values("day")
+
         c1, c2 = st.columns(2)
 
         with c1:
@@ -541,6 +541,7 @@ with tab3:
         st.bar_chart(
             ds.set_index("day")["total_screen"]
         )
+
         st.bar_chart(
             ds.set_index("day")["avg_screen"]
         )
@@ -556,9 +557,9 @@ with tab3:
                 "total_screen",
                 "avg_screen",
                 "total_steps",
-            ]]
+            ]],
+            use_container_width=True
         )
-
 
 with tab4:
     st.subheader("Hobby Tracker")
