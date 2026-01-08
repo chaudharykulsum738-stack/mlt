@@ -519,37 +519,45 @@ with tab3:
     if ds.empty:
         st.info("No entries yet")
     else:
-        ds = ds.sort_values("day")
+        # 🔒 Streamlit-safe sorting (prevents KeyError)
+        if "day" in ds.columns:
+            x_col = "day"
+        elif "day_label" in ds.columns:
+            x_col = "day_label"
+        else:
+            x_col = "start"   # fallback
+
+        ds = ds.sort_values(x_col)
 
         c1, c2 = st.columns(2)
 
         with c1:
             st.line_chart(
-                ds.set_index("day")[["avg_sleep", "avg_stress", "avg_anxiety"]]
+                ds.set_index(x_col)[["avg_sleep", "avg_stress", "avg_anxiety"]]
             )
             st.bar_chart(
-                ds.set_index("day")["total_steps"]
+                ds.set_index(x_col)["total_steps"]
             )
 
         with c2:
             st.bar_chart(
-                ds.set_index("day")["total_meditation"]
+                ds.set_index(x_col)["total_meditation"]
             )
             st.bar_chart(
-                ds.set_index("day")["avg_water"]
+                ds.set_index(x_col)["avg_water"]
             )
 
         st.bar_chart(
-            ds.set_index("day")["total_screen"]
+            ds.set_index(x_col)["total_screen"]
         )
 
         st.bar_chart(
-            ds.set_index("day")["avg_screen"]
+            ds.set_index(x_col)["avg_screen"]
         )
 
         st.dataframe(
             ds[[
-                "day",
+                x_col,
                 "avg_sleep",
                 "avg_stress",
                 "avg_anxiety",
