@@ -412,9 +412,16 @@ with tab1:
         st.rerun()
 
 with tab2:
-    st.subheader("History")
+    st.subheader("📜 History")
+
     if entries:
-        sorted_entries = sorted(entries, key=lambda e: e.get("date", ""), reverse=True)
+        # Sort by date (latest first)
+        sorted_entries = sorted(
+            entries,
+            key=lambda e: pd.to_datetime(e.get("date"), errors="coerce"),
+            reverse=True
+        )
+
         display_rows = [{
             "Date": e.get("date", ""),
             "Mood": e.get("mood", ""),
@@ -429,20 +436,25 @@ with tab2:
             "id": e.get("id", ""),
         } for e in sorted_entries]
 
-        # Prepare DataFrame for Excel download (excluding ID)
-        df_export = pd.DataFrame([{k: v for k, v in row.items() if k != "id"} for row in display_rows])
+        # Export DataFrame (exclude id)
+        df_export = pd.DataFrame(
+            [{k: v for k, v in row.items() if k != "id"} for row in display_rows]
+        )
+
         buffer = io.BytesIO()
         with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
             df_export.to_excel(writer, index=False, sheet_name="History")
-        
+
         st.download_button(
-            label="Download as Excel",
+            label="⬇️ Download as Excel",
             data=buffer.getvalue(),
             file_name=f"mental_health_history_{date.today()}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
 
-        st.dataframe(df_export, width="stretch")
+        st.dataframe(df_export, use_container_width=True)
+
+        # Card-style display
         for row in display_rows:
             st.markdown(
                 f"""
@@ -452,29 +464,33 @@ with tab2:
                         <div class="entry-kv"><b>{row['Date']}</b></div>
                     </div>
                     <div class="entry-grid">
-                        <div class="entry-kv">Sleep: <b>{row['Sleep']}</b></div>
-                        <div class="entry-kv">Water: <b>{row['Water (L)']} L</b></div>
-                        <div class="entry-kv">Steps: <b>{row['Steps']}</b></div>
-                        <div class="entry-kv">Stress: <b>{row['Stress']}</b></div>
-                        <div class="entry-kv">Anxiety: <b>{row['Anxiety']}</b></div>
-                        <div class="entry-kv">Meditation: <b>{row['Meditation']} min</b></div>
-                        <div class="entry-kv">Screen time: <b>{row['Screen time']} min</b></div>
+                        <div>Sleep: <b>{row['Sleep']}</b></div>
+                        <div>Water: <b>{row['Water (L)']} L</b></div>
+                        <div>Steps: <b>{row['Steps']}</b></div>
+                        <div>Stress: <b>{row['Stress']}</b></div>
+                        <div>Anxiety: <b>{row['Anxiety']}</b></div>
+                        <div>Meditation: <b>{row['Meditation']} min</b></div>
+                        <div>Screen time: <b>{row['Screen time']} min</b></div>
                     </div>
-                    <div class="entry-kv">Notes: <b>{row['Notes']}</b></div>
+                    <div>Notes: <b>{row['Notes']}</b></div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+
             c1, c2 = st.columns(2)
-            if c1.button("Edit", key=f"edit_{row['id']}"):
+
+            if c1.button("✏️ Edit", key=f"edit_{row['id']}"):
                 st.session_state.editing_id = row["id"]
                 e = next((x for x in entries if x["id"] == row["id"]), None)
                 if e:
                     st.session_state.form = {
-                        "date": datetime.fromisoformat(e.get("date", date.today().isoformat())).date(),
+                        "date": pd.to_datetime(
+                            e.get("date"), errors="coerce"
+                        ).date(),
                         "mood": e.get("mood", ""),
-                        "sleep": float(e.get("sleepHours", 0.0)),
-                        "water": float(e.get("waterLiters", 0.0)),
+                        "sleep": float(e.get("sleepHours", 0)),
+                        "water": float(e.get("waterLiters", 0)),
                         "steps": int(e.get("steps", 0)),
                         "stress": int(e.get("stressLevel", 5)),
                         "anxiety": int(e.get("anxietyLevel", 5)),
@@ -483,7 +499,8 @@ with tab2:
                         "notes": e.get("notes", ""),
                     }
                 st.rerun()
-            if c2.button("Delete", key=f"del_{row['id']}"):
+
+            if c2.button("🗑️ Delete", key=f"del_{row['id']}"):
                 entries = [x for x in entries if x["id"] != row["id"]]
                 save_entries(entries)
                 if st.session_state.editing_id == row["id"]:
@@ -493,6 +510,7 @@ with tab2:
                 st.rerun()
     else:
         st.info("No entries yet")
+
 
 with tab3:
     st.subheader("📊 Daily Dashboard")
