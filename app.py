@@ -288,12 +288,17 @@ def stats(entries):
         "avg_screen": round(scr / n, 0),
     }
 
-def weekly_stats_df(entries):
+def daily_stats_df(entries):
     if not entries:
         return pd.DataFrame()
+
     df = pd.DataFrame(entries)
+
+    # Date handling
     df["date"] = pd.to_datetime(df.get("date"), errors="coerce")
-    df = df.dropna(subset=["date"]) 
+    df = df.dropna(subset=["date"])
+
+    # Numeric columns safety
     for col in [
         "sleepHours",
         "waterLiters",
@@ -304,25 +309,30 @@ def weekly_stats_df(entries):
         "screenTimeMinutes"
     ]:
         df[col] = pd.to_numeric(df.get(col), errors="coerce")
-    iso = df["date"].dt.isocalendar()
-    df["iso_year"] = iso["year"]
-    df["iso_week"] = iso["week"]
-    df["week_label"] = df["iso_year"].astype(str) + "-W" + df["iso_week"].astype(str).str.zfill(2)
-    g = df.groupby(["iso_year", "iso_week", "week_label"], dropna=False)
+
+    # Daily label
+    df["day"] = df["date"].dt.date
+    df["day_label"] = df["date"].dt.strftime("%Y-%m-%d")
+
+    # Group by day
+    g = df.groupby(["day", "day_label"], dropna=False)
+
     agg = g.agg(
         avg_sleep=("sleepHours", "mean"),
         avg_stress=("stressLevel", "mean"),
         avg_anxiety=("anxietyLevel", "mean"),
         avg_water=("waterLiters", "mean"),
         total_meditation=("meditationMinutes", "sum"),
-        total_screen=("screenTimeMinutes","sum"),
+        total_screen=("screenTimeMinutes", "sum"),
         avg_screen=("screenTimeMinutes", "mean"),
         total_steps=("steps", "sum"),
         start=("date", "min"),
         end=("date", "max"),
     )
-    agg = agg.sort_values(["iso_year", "iso_week"]).reset_index()
+
+    agg = agg.sort_values("day").reset_index(drop=True)
     return agg
+
 
 st.markdown('<div class="banner">🧠 Mental Health Tracker</div>', unsafe_allow_html=True)
 ms = stats(entries)
@@ -485,25 +495,41 @@ with tab2:
         st.info("No entries yet")
 
 with tab3:
-    st.subheader("Dashboard")
-    ws = weekly_stats_df(entries)
-    if ws.empty:
+    st.subheader("📊 Daily Dashboard")
+
+    ds = daily_stats_df(entries)
+
+    if ds.empty:
         st.info("No entries yet")
     else:
         c1, c2 = st.columns(2)
+
         with c1:
-            st.line_chart(ws.set_index("week_label")[["avg_sleep", "avg_stress", "avg_anxiety"]])
-            st.bar_chart(ws.set_index("week_label")["total_steps"])
+            st.line_chart(
+                ds.set_index("day")[["avg_sleep", "avg_stress", "avg_anxiety"]]
+            )
+            st.bar_chart(
+                ds.set_index("day")["total_steps"]
+            )
+
         with c2:
-            st.bar_chart(ws.set_index("week_label")["total_meditation"])
-            st.bar_chart(ws.set_index("week_label")["avg_water"])
-        st.bar_chart(ws.set_index("week_label")["total_screen"])
-        st.bar_chart(ws.set_index("week_label")["avg_screen"])
+            st.bar_chart(
+                ds.set_index("day")["total_meditation"]
+            )
+            st.bar_chart(
+                ds.set_index("day")["avg_water"]
+            )
+
+        st.bar_chart(
+            ds.set_index("day")["total_screen"]
+        )
+        st.bar_chart(
+            ds.set_index("day")["avg_screen"]
+        )
+
         st.dataframe(
-            ws[[
-                "week_label",
-                "start",
-                "end",
+            ds[[
+                "day",
                 "avg_sleep",
                 "avg_stress",
                 "avg_anxiety",
@@ -512,8 +538,9 @@ with tab3:
                 "total_screen",
                 "avg_screen",
                 "total_steps",
-                ]]
+            ]]
         )
+
 
 with tab4:
     st.subheader("Hobby Tracker")
