@@ -143,7 +143,7 @@ def default_values():
         "screenTimeMinutes": 0,
     }
 
-st.set_page_config(page_title="MindCare", page_icon="https://raw.githubusercontent.com/chaudharykulsum738-stack/mlt/main/logo.png", layout="wide")
+st.set_page_config(page_title="MindCare", page_icon="https://raw.githubusercontent.com/chaudharykulsum738-stack/mlt/main/logo.png", layout="centered")
 st.markdown(
     """
     <style>
