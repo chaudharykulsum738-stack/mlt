@@ -359,7 +359,36 @@ page = st.sidebar.radio(
     ]
 )
 
-if page == "📝 Log Entry":
+if not st.session_state.logged_in:
+    st.warning("🔐 Please sign in from the sidebar to continue")
+    st.stop()
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+if not st.session_state.logged_in:
+    username = st.sidebar.text_input("👤 Username")
+    password = st.sidebar.text_input("🔑 Password", type="password")
+
+    if st.sidebar.button("Sign In"):
+        if username and password:
+            # simple demo validation
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.sidebar.success(f"Welcome, {username} 👋")
+            st.rerun()
+        else:
+            st.sidebar.error("Enter username & password")
+else:
+    st.sidebar.success(f"✅ Logged in as {st.session_state.username}")
+    if st.sidebar.button("🚪 Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.rerun()
+
+elif page == "📝 Log Entry":
     st.subheader("Add / Update Entry")
     c1, c2 = st.columns(2)
     with c1:
