@@ -345,8 +345,21 @@ with mc4:
 with mc5:
     st.metric("Avg Screen Time", f"{int(ms.get('avg_screen', 0))} min")
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Log Entry", "History", "Dashboard", "Hobby", "Affirmations", "Daily Tips"])
-with tab1:
+st.sidebar.title("🧭 Navigation")
+
+page = st.sidebar.radio(
+    "Go to",
+    [
+        "📝 Log Entry",
+        "📜 History",
+        "📊 Dashboard",
+        "🎯 Hobby",
+        "💬 Affirmations",
+        "🌱 Daily Tips",
+    ]
+)
+
+if page == "📝 Log Entry":
     st.subheader("Add / Update Entry")
     c1, c2 = st.columns(2)
     with c1:
@@ -408,7 +421,7 @@ with tab1:
         st.success("History cleared")
         st.rerun()
 
-with tab2:
+elif page == "📜 History":
     st.subheader("📜 History")
 
     if entries:
@@ -507,7 +520,7 @@ with tab2:
                 st.rerun()
     else:
         st.info("No entries yet")
-with tab3:
+elif page == "📊 Dashboard":
     st.subheader("📊 Daily Dashboard")
 
     ds = daily_stats_df(entries)
@@ -565,8 +578,7 @@ with tab3:
             ]],
             use_container_width=True
         )
-
-with tab4:
+elif page == "🎯 Hobby":
     st.subheader("Hobby Tracker")
     hc1, hc2 = st.columns(2)
     with hc1:
@@ -663,7 +675,7 @@ with tab4:
                     st.success("Hobby deleted")
                     st.rerun()
 
-with tab5:
+elif page == "💬 Affirmations":
     st.subheader("Affirmations")
     affirmations = [
         "I believe in my abilities and express my true self with confidence.",
@@ -737,7 +749,7 @@ with tab5:
         st.session_state.affirm_index = (st.session_state.affirm_index + 1) % len(affirmations)
         st.rerun()
 
-with tab6:
+elif page == "🌱 Daily Tips":
     st.subheader("Daily Mental Health Tips")
     tips = [
         "🧠 Mind & Emotions: Start your day with 3 deep breaths before touching your phone.",
