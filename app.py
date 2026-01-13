@@ -350,6 +350,7 @@ st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio(
     "Go to",
     [
+        "🔐 Login",
         "📝 Log Entry",
         "📜 History",
         "📊 Dashboard",
@@ -359,34 +360,39 @@ page = st.sidebar.radio(
     ]
 )
 
-if not st.session_state.logged_in:
-    st.warning("🔐 Please sign in from the sidebar to continue")
-    st.stop()
+
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-if not st.session_state.logged_in:
-    username = st.sidebar.text_input("👤 Username")
-    password = st.sidebar.text_input("🔑 Password", type="password")
+if page == "🔐 Login":
+    st.subheader("🔐 Login")
 
-    if st.sidebar.button("Sign In"):
-        if username and password:
-            # simple demo validation
-            st.session_state.logged_in = True
-            st.session_state.username = username
-            st.sidebar.success(f"Welcome, {username} 👋")
+    if st.session_state.logged_in:
+        st.success(f"✅ Logged in as {st.session_state.username}")
+
+        if st.button("🚪 Logout"):
+            st.session_state.logged_in = False
+            st.session_state.username = ""
             st.rerun()
-        else:
-            st.sidebar.error("Enter username & password")
-else:
-    st.sidebar.success(f"✅ Logged in as {st.session_state.username}")
-    if st.sidebar.button("🚪 Logout"):
-        st.session_state.logged_in = False
-        st.session_state.username = ""
-        st.rerun()
+    else:
+        username = st.text_input("👤 Username")
+        password = st.text_input("🔑 Password", type="password")
+
+        if st.button("Login"):
+            if username and password:
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Login successful 🎉")
+                st.rerun()
+            else:
+                st.error("Please enter username and password")
+
+if not st.session_state.logged_in:
+    st.warning("🔐 Please sign in from the sidebar to continue")
+    st.stop()
 
 elif page == "📝 Log Entry":
     st.subheader("Add / Update Entry")
