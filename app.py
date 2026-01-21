@@ -14,7 +14,6 @@ import random
 BASE_DIR = Path(__file__).resolve().parent
 DESKTOP = Path(os.path.expanduser("~/Desktop"))
 
-
 def pick_writable_dir(candidate_dirs):
     for d in candidate_dirs:
         if not d:
@@ -401,6 +400,30 @@ page = st.sidebar.radio(
         "🌱 Daily Tips",
     ]
 )
+
+st.sidebar.divider()
+with st.sidebar.expander("⚙️ Settings"):
+    if st.button("📥 Download All Data (JSON)"):
+        data = {
+            "entries": entries,
+            "hobbies": hobbies
+        }
+        st.download_button(
+            label="Confirm Download",
+            data=json.dumps(data, indent=2, default=str),
+            file_name=f"mindcare_backup_{date.today()}.json",
+            mime="application/json"
+        )
+    
+    if st.button("🗑️ Factory Reset"):
+        st.warning("This will delete all data permanently.")
+        if st.checkbox("I am sure"):
+            entries = []
+            hobbies = []
+            save_entries(entries)
+            save_hobbies(hobbies)
+            st.session_state.clear()
+            st.rerun()
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
