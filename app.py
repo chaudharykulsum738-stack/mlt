@@ -144,6 +144,37 @@ def default_values():
     }
 
 st.set_page_config(page_title="MindCare", page_icon="https://raw.githubusercontent.com/chaudharykulsum738-stack/mlt/main/logo.png", layout="centered")
+st.sidebar.markdown(
+    """
+    <style>
+    .sidebar-card {
+        background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+        padding: 18px;
+        border-radius: 18px;
+        color: white;
+        text-align: center;
+        margin-bottom: 16px;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+    }
+    .sidebar-card h2 {
+        margin: 6px 0 0;
+        font-size: 22px;
+    }
+    .sidebar-card p {
+        font-size: 13px;
+        opacity: 0.9;
+        margin-top: 4px;
+    }
+    </style>
+
+    <div class="sidebar-card">
+        <h2>🧠 MindCare</h2>
+        <p>Mental Wellness Companion</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown(
     """
     <style>
@@ -344,7 +375,17 @@ with mc4:
     st.metric("Meditation Total", f"{ms['meditation_total']} min")
 with mc5:
     st.metric("Avg Screen Time", f"{int(ms.get('avg_screen', 0))} min")
-
+if st.session_state.get("logged_in"):
+    st.sidebar.markdown(
+        f"""
+        <div class="sidebar-card"
+             style="background: linear-gradient(135deg,#16a34a,#22c55e)">
+            <h2>👋 Hi, {st.session_state.username}</h2>
+            <p>Welcome back</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 st.sidebar.title("🧭 Navigation")
 
 page = st.sidebar.radio(
@@ -370,25 +411,27 @@ if "username" not in st.session_state:
 if page == "🔐 Login":
     st.subheader("🔐 Login")
 
-    if st.session_state.logged_in:
-        st.success(f"✅ Logged in as {st.session_state.username}")
+if st.session_state.logged_in:
+    st.success(f"✅ Logged in as {st.session_state.username}")
 
-        if st.button("🚪 Logout"):
-            st.session_state.logged_in = False
-            st.session_state.username = ""
+    if st.button("🚪 Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.rerun()
+
+else:
+    email = st.text_input("📧 Email ID")
+    password = st.text_input("🔑 Password", type="password")
+
+    if st.button("Login"):
+        if email and password:
+            st.session_state.logged_in = True
+            st.session_state.username = email.split("@")[0].title()
+            st.success("Login successful 🎉")
             st.rerun()
-    else:
-        username = st.text_input("👤 Username")
-        password = st.text_input("🔑 Password", type="password")
+        else:
+            st.error("❌ Please enter email and password")
 
-        if st.button("Login"):
-            if username and password:
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.success("Login successful 🎉")
-                st.rerun()
-            else:
-                st.error("Please enter username and password")
 
 if not st.session_state.logged_in:
     st.warning("🔐 Please sign in from the sidebar to continue")
@@ -590,10 +633,6 @@ elif page == "📊 Dashboard":
             st.bar_chart(
                 ds.set_index(x_col)["avg_water"]
             )
-
-        st.bar_chart(
-            ds.set_index(x_col)["total_screen"]
-        )
 
         st.bar_chart(
             ds.set_index(x_col)["avg_screen"]
