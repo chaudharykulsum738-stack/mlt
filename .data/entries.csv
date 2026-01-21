@@ -1,0 +1,11 @@
+id,date,mood,sleepHours,waterLiters,steps,stressLevel,anxietyLevel,meditationMinutes,screenTimeMinutes,notes
+1,2026-01-11,Happy,7.5,2.0,5000,3,2,15,120,Feeling great today
+2,2026-01-12,Stressed,6.0,1.5,3000,8,7,5,180,Busy day at work
+3,2026-01-13,Neutral,7.0,2.5,4500,5,4,10,150,Normal day
+4,2026-01-14,Sad,5.5,1.0,2000,7,6,0,200,Felt a bit down
+5,2026-01-15,Happy,8.0,3.0,7000,2,2,20,90,Very productive day
+6,2026-01-16,Anxious,6.5,1.8,3500,6,8,5,210,Had a stressful meeting
+7,2026-01-17,Happy,7.8,2.2,6000,3,3,25,100,Relaxing day
+8,2026-01-18,Neutral,7.2,2.0,4000,5,4,10,130,Regular day
+9,2026-01-19,Sad,6.0,1.5,2500,6,7,0,190,Felt tired and low energy
+10,2026-01-20,Stressed,5.8,1.2,3000,7,8,0,220,High workload today
