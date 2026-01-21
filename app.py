@@ -10,12 +10,9 @@ import streamlit as st
 import pandas as pd
 import random
 
-BASE_DIR = Path(__file__).resolve().parent
 
-# Now this works
-DATA_DIR = pick_writable_dir([os.getenv("MHT_DATA_DIR"), BASE_DIR / "data", BASE_DIR])
-CSV_PATH = DATA_DIR / "entries.csv"
-BACKUP_EXCEL_PATH = DATA_DIR / "entries.xlsx"
+BASE_DIR = Path(__file__).resolve().parent
+DESKTOP = Path(os.path.expanduser("~/Desktop"))
 
 
 def pick_writable_dir(candidate_dirs):
