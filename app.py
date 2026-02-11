@@ -391,19 +391,19 @@ st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio(
     "Go to",
     [
-        "🔐 Login",
-        "📝 Log Entry",
-        "📜 History",
-        "📊 Dashboard",
-        "🎯 Hobby",
-        "💬 Affirmations",
-        "🌱 Daily Tips",
+        " Login",
+        " Log Entry",
+        " History",
+        " Dashboard",
+        " Hobby",
+        " Affirmations",
+        " Daily Tips",
     ]
 )
 
 st.sidebar.divider()
 with st.sidebar.expander("⚙️ Settings"):
-    if st.button("📥 Download All Data (JSON)"):
+    if st.button(" Download All Data (JSON)"):
         data = {
             "entries": entries,
             "hobbies": hobbies
@@ -415,7 +415,7 @@ with st.sidebar.expander("⚙️ Settings"):
             mime="application/json"
         )
     
-    if st.button("🗑️ Factory Reset"):
+    if st.button(" Factory Reset"):
         st.warning("This will delete all data permanently.")
         if st.checkbox("I am sure"):
             entries = []
@@ -430,20 +430,20 @@ if "logged_in" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-if page == "🔐 Login":
-    st.subheader("🔐 Login")
+if page == " Login":
+    st.subheader(" Login")
 
 if st.session_state.logged_in:
     st.success(f"✅ Logged in as {st.session_state.username}")
 
-    if st.button("🚪 Logout"):
+    if st.button(" Logout"):
         st.session_state.logged_in = False
         st.session_state.username = ""
         st.rerun()
 
 else:
     email = st.text_input("📧 Email ID")
-    password = st.text_input("🔑 Password", type="password")
+    password = st.text_input(" Password", type="password")
 
     if st.button("Login"):
         if email and password:
@@ -456,10 +456,10 @@ else:
 
 
 if not st.session_state.logged_in:
-    st.warning("🔐 Please sign in from the sidebar to continue")
+    st.warning(" Please sign in from the sidebar to continue")
     st.stop()
 
-elif page == "📝 Log Entry":
+elif page == " Log Entry":
     st.subheader("Add / Update Entry")
     c1, c2 = st.columns(2)
     with c1:
@@ -521,8 +521,8 @@ elif page == "📝 Log Entry":
         st.success("History cleared")
         st.rerun()
 
-elif page == "📜 History":
-    st.subheader("📜 History")
+elif page == " History":
+    st.subheader(" History")
 
     if entries:
         # Sort by date (latest first)
@@ -620,8 +620,8 @@ elif page == "📜 History":
                 st.rerun()
     else:
         st.info("No entries yet")
-elif page == "📊 Dashboard":
-    st.subheader("📊 Daily Dashboard")
+elif page == " Dashboard":
+    st.subheader(" Daily Dashboard")
 
     ds = daily_stats_df(entries)
 
@@ -674,7 +674,7 @@ elif page == "📊 Dashboard":
             ]],
             use_container_width=True
         )
-elif page == "🎯 Hobby":
+elif page == " Hobby":
     st.subheader("Hobby Tracker")
     hc1, hc2 = st.columns(2)
     with hc1:
@@ -771,7 +771,7 @@ elif page == "🎯 Hobby":
                     st.success("Hobby deleted")
                     st.rerun()
 
-elif page == "💬 Affirmations":
+elif page == " Affirmations":
     st.subheader("Affirmations")
     affirmations = [
         "I believe in my abilities and express my true self with confidence.",
@@ -845,7 +845,7 @@ elif page == "💬 Affirmations":
         st.session_state.affirm_index = (st.session_state.affirm_index + 1) % len(affirmations)
         st.rerun()
 
-elif page == "🌱 Daily Tips":
+elif page == " Daily Tips":
     st.subheader("Daily Mental Health Tips")
     tips = [
         "🧠 Mind & Emotions: Start your day with 3 deep breaths before touching your phone.",
